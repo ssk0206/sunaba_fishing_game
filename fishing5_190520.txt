@@ -18,10 +18,12 @@ const SUN_RED -> 883300
 
 const SCREEN -> 60000
 const MAIN_TIME -> 1000
+const MAIN_NUM -> 1100
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
 const FISH_NUMBER -> 20
+const COLLITION_NUMBER -> 1050
 
 # ---------------------------------
 # ゲーム本体
@@ -44,9 +46,9 @@ while up_key() = 0
 	Player_draw(PLAYER_NUMBER)
 
 	Fish_move(FISH_NUMBER)
-	Fish_draw(FISH_NUMBER)
 
 
+	Number_draw(MAIN_NUM, ONE)
 
 	# 左クリックで釣り糸フラグを立てる
 	if left_click()
@@ -74,6 +76,8 @@ def initialize_game()
 	Fishline_new(FISHLINE_NUMBER)
 	Timer_new(MAIN_TIME)
 	Fish_new(FISH_NUMBER)
+	Collision_new(COLLITION_NUMBER)
+	Number_new(MAIN_NUM)
 
 #
 # 空を作成
@@ -388,6 +392,7 @@ const FISH_VELOCITY -> 2
 const DIRECTION -> 3
 const CATCH_FLAG -> 4
 const MOVE_FLAG -> 5
+const CREATE_SEA_FLAG -> 6
 
 def Fish_new(this)
 	this[FISH_X] -> random(this, 100)
@@ -400,28 +405,61 @@ def Fish_new(this)
 	this[DIRECTION] -> -1
 	if modulo(this, 2)
 		this[DIRECTION] -> 1
+	this[CREATE_SEA_FLAG] -> 1
 
+def Fish_get_x(this)
+	out -> this[FISH_X]
+
+def Fish_get_y(this)
+	out -> this[FISH_Y]
 
 def Fish_move(this)
-	# もしフラグが立っていたら魚が移動
-	if Fish_move_flag(this)
+	Collision_judge(COLLITION_NUMBER, FISHLINE_NUMBER, this)
+	
+	# もしフラグが立っていたら、キャッチされていなかったら魚が移動
+	if Fish_move_flag(this) * (this[CATCH_FLAG] = 0)
 
 		# 端っこに着いたら方向が反対に
-		if (this[FISH_X] = -15) + (this[FISH_X] = 115)
+		if (this[FISH_X] = -10) + (this[FISH_X] = 110)
 			this[DIRECTION] -> -1 * this[DIRECTION]
 
 		this[FISH_X] -> this[FISH_X] + this[DIRECTION]
+	
+		Fish_draw(FISH_NUMBER)
 
-# 動くかどうかのフラグ
+	# もしキャッチされていたら魚が上に上がる
+	if this[CATCH_FLAG]
+		Fish_up(this)
+
+# このフレームに魚が動くかどうかのフラグ
 def Fish_move_flag(this)
 	this[MOVE_FLAG] -> 0
 	if modulo(Timer_get_count(MAIN_TIME), (60 / this[FISH_VELOCITY]) ) = 0
 		this[MOVE_FLAG] -> 1
 	out -> this[MOVE_FLAG]
 
+# 釣られたらCATCH_FLAGを立てる
+def Fish_catch(this)
+	
+	this[CATCH_FLAG] -> 1
+
+def Fish_up(this)
+	#this[FISH_X] -> Fishline_get_x(FISHLINE_NUMBER)
+	this[FISH_Y] -> Fishline_get_y(FISHLINE_NUMBER)
+	
+	Fish_draw(this)
 
 def Fish_draw(this)
 	point(this[FISH_X], this[FISH_Y], BLACK)
+	x -> -1
+	y -> -1
+	while y < 6
+		while x < 12
+			point(this[FISH_X] + (this[DIRECTION] * -x), this[FISH_Y] + y, SUN_RED)
+			x -> x + 1
+		y -> y + 1
+		x -> -1
+
 	x -> 0
 	y -> 0
 	while y < 5
@@ -436,9 +474,42 @@ def Fish_draw(this)
 	point(this[FISH_X]                         , this[FISH_Y] +2, RED)
 	point(this[FISH_X] + (this[DIRECTION] * -4), this[FISH_Y]   , RED)
 	point(this[FISH_X] + (this[DIRECTION] * -4), this[FISH_Y] +4, RED)
+	point(this[FISH_X] 												 , this[FISH_Y] +1, MARINE_BLUE)
+	point(this[FISH_X] 												 , this[FISH_Y] +3, MARINE_BLUE)
 	point(this[FISH_X] + (this[DIRECTION] * -7), this[FISH_Y] +1, MARINE_BLUE)
 	point(this[FISH_X] + (this[DIRECTION] * -7), this[FISH_Y] +3, MARINE_BLUE)
 	point(this[FISH_X] + (this[DIRECTION] * -9), this[FISH_Y] +2, MARINE_BLUE)
+
+
+# ---------------------------------
+# 当たり判定クラス Collision
+# ---------------------------------
+
+const JUDGEMENT -> 0
+
+def Collision_new(this)
+	this[JUDGEMENT] -> 0
+
+# もし当たり判定内に入っていたらフラグを立てる
+def Collision_judge(this, fishline_number, fish_number)
+	x -> Fishline_get_x(fishline_number)
+	y -> Fishline_get_y(fishline_number)
+	x2 -> Fish_get_x(fish_number)
+	y2 -> Fish_get_y(fish_number)
+
+	if fish_number[DIRECTION] = 1
+		if (((x2-12) <= x) * (x < (x2+2)) * (y2 <= y) * (y < (y2 + 5)))
+			Collition_hit(this, fish_number)
+	if fish_number[DIRECTION] = -1
+		if (((x2-2) <= x) * (x < (x2 + 10)) * (y2 <= y) * (y < (y2 + 5)))
+			Collition_hit(this, fish_number)
+# Fishクラスに釣られたことを教える
+def Collition_hit(this, fish_number)
+	# 海の描画クリア
+	if fish_number[CREATE_SEA_FLAG]
+		create_sea()
+		fish_number[CREATE_SEA_FLAG] -> 0
+	Fish_catch(fish_number)
 
 
 
@@ -472,11 +543,39 @@ def Timer_increment(this)
 def Timer_change_flag(this)
 	out -> this[CHANGE_FLAG]
 
+# ------------------------------------
+# ナンバークラス Number
+# ------------------------------------
 
+const ZERO -> 0
+const ONE -> 20
+def Number_new(this)
+	Number_create_one(this, ONE)
 
+def Number_create_one(this, num)
+	num_1 -> 011010
+	num_2 -> 111010010
+	Number_create(this, num, num_1, num_2)
+		
+def Number_create(this, num, num_1, num_2)
+	i -> 0
+	while i < 15
+		if i < 6
+			this[num + i] -> modulo(num_1, 10)
+			num_1 -> (num_1 / 10)
+		if i >= 6
+			this[num + i] -> modulo(num_2, 10)
+			num_2 -> (num_2 / 10)
+		i -> i + 1
 
-
-
+def Number_draw(this, num)
+	i -> 0
+	while i < 15
+		if (this[i + num] = 1)
+			y -> i / 3
+			x -> modulo(i, 3)
+			point(50+x, 50+y, WHITE)
+		i -> i + 1
 
 
 
