@@ -1,0 +1,491 @@
+# ---------------------------------
+# 釣りゲーム
+# ---------------------------------
+
+memory[55001] -> 1
+
+#
+# 定数 先頭大文字
+#
+const WHITE -> 999999
+const BLACK -> 000000
+const GLAY -> 444444
+const BROWN -> 992222
+const MARINE_BLUE -> 004577
+const RED -> 990000
+const SKY_BLUE -> 668699
+const SUN_RED -> 883300
+
+const SCREEN -> 60000
+const MAIN_TIME -> 1000
+
+const PLAYER_NUMBER -> 0
+const FISHLINE_NUMBER -> 10
+const FISH_NUMBER -> 20
+
+# ---------------------------------
+# ゲーム本体
+# ---------------------------------
+
+initialize_game()
+
+
+while up_key() = 0
+	memory[55000] -> 1
+
+	# 釣り糸を垂らし始めたら釣り針が下がる
+	if Fishline_get_drop_flag(FISHLINE_NUMBER) = 1
+		Fishline_drop(FISHLINE_NUMBER)
+
+	# 釣り糸を垂らし始めたら船は動けない
+	if Fishline_get_drop_flag(FISHLINE_NUMBER) = 0
+		Player_move(PLAYER_NUMBER)
+
+	Player_draw(PLAYER_NUMBER)
+
+	Fish_move(FISH_NUMBER)
+	Fish_draw(FISH_NUMBER)
+
+
+
+	# 左クリックで釣り糸フラグを立てる
+	if left_click()
+		Fishline_set_drop_flag(FISHLINE_NUMBER)
+
+	Fishline_draw(FISHLINE_NUMBER)
+
+	Timer_increment(MAIN_TIME)
+	if enter_key()
+		initialize_game()
+
+# ---------------------------------
+# ゲーム画面
+# ---------------------------------
+
+#
+# ゲーム初期化
+#
+def initialize_game()
+	create_sky()
+	create_sun()
+	create_sea()
+	#プレイヤー生成
+	Player_new(PLAYER_NUMBER)
+	Fishline_new(FISHLINE_NUMBER)
+	Timer_new(MAIN_TIME)
+	Fish_new(FISH_NUMBER)
+
+#
+# 空を作成
+#
+def create_sky()
+	x -> 0
+	y -> 0
+	while y < 26
+		while x < 100
+			point(x, y, SKY_BLUE)
+			x -> x + 1
+		y -> y + 1
+		x -> 0
+
+#
+# 太陽を作成
+#
+def create_sun()
+	x -> 5
+	y -> 5
+	while y < 8
+		while x < 8
+			point(x, y, SUN_RED)
+			x -> x + 1
+		y -> y + 1
+		x -> 5
+
+	point(3, 3, SUN_RED)
+	point(6, 2, SUN_RED)
+	point(6, 3, SUN_RED)
+	point(9, 3, SUN_RED)
+
+	point(9, 6, SUN_RED)
+	point(10, 6, SUN_RED)
+	point(9, 9, SUN_RED)
+
+	point(6, 9, SUN_RED)
+	point(6, 10, SUN_RED)
+
+	point(2, 6, SUN_RED)
+	point(3, 6, SUN_RED)
+	point(3, 9, SUN_RED)
+
+
+# 
+# 海を作成
+#
+def create_sea()
+	x -> 0
+	y -> 26
+	while y < 100
+		while x < 100
+			point(x, y, MARINE_BLUE)
+			x -> x + 1
+		y -> y + 1
+		x -> 0
+
+# ---------------------------------
+# ライブラリ
+# ---------------------------------
+
+#
+# 点を描画
+#
+def point(x, y, color)
+	if (0 <= x) * (x < 100) * (0 <= y) * (y < 100)
+		SCREEN[x + (y * 100)] -> color
+
+#
+# マウスの X 座標
+#
+def mouse_x()
+	out -> memory[50000]
+
+#
+# マウスの Y 座標
+#
+def mouse_y()
+	out -> memory[50001]
+
+#
+# 左クリック
+#
+def left_click()
+	out -> memory[50002]
+
+#
+# 上キー
+#
+def up_key()
+	out -> memory[50004]
+
+#
+# エンターキー
+#
+def enter_key()
+	out -> memory[50009]
+
+#
+# エンターキーで画面クリア
+#
+def clear_screen()
+	x -> 0
+	y -> 0
+	while y < 100
+		while x < 100
+			point(x, y, BLACK)
+			x -> x + 1
+		y -> y + 1
+		x -> 0
+
+
+
+# 方向を決める
+def sign(x)
+	out -> 0
+	if x < 0
+		out -> -1
+	if x > 0
+		out -> 1
+
+
+# 絶対値
+def abs(x)
+	if x < 0
+		x -> -x
+	out -> x
+
+#
+# 最大値
+#
+def max (i, j)
+	a -> j
+	if i > j
+		a -> i
+	if i <= j
+		a -> j
+	out -> a
+
+#
+# 最小値
+#
+def min (i, j)
+	a -> i
+	if j > i
+		a -> i
+	if j <= i
+		a -> j
+	out -> a
+
+#
+# あまり
+#
+def modulo(a, b)
+   out -> (a - ((a / b) * b))
+
+#
+# 擬似乱数
+#
+def random(prev, num) #linear congruential generator mod 1048573
+   if prev = 0 #0はマズい
+      prev -> 1
+   out -> modulo(2043 * prev, num)
+
+# ---------------------------------
+# Playerクラス
+# ---------------------------------
+
+const PLAYER_X -> 0
+const PLAYER_Y -> 1
+const PLAYER_VELOCITY -> 2
+
+# インスタンス作成
+def Player_new(this)
+	this[PLAYER_X] -> 50
+	this[PLAYER_Y] -> 24					#キャラクターの高さ
+	this[PLAYER_VELOCITY] -> 1		#速度を設定
+
+def Player_get_x(this)
+	out -> this[PLAYER_X]
+
+def Player_get_y(this)
+	out -> this[PLAYER_Y]
+
+
+# マウス方向に動く
+def Player_move(this)
+	if abs((this[PLAYER_X] - mouse_x())) > 1
+
+		# 前の位置を消す
+		point(this[PLAYER_X], this[PLAYER_Y]-1, SKY_BLUE)
+		point(this[PLAYER_X]+1, this[PLAYER_Y]-2, SKY_BLUE)
+		point(this[PLAYER_X]+2, this[PLAYER_Y]-3, SKY_BLUE)
+		point(this[PLAYER_X]+3, this[PLAYER_Y]-4, SKY_BLUE)
+
+		point(this[PLAYER_X]-3, this[PLAYER_Y]+1, SKY_BLUE)
+		point(this[PLAYER_X]-2, this[PLAYER_Y]+1, SKY_BLUE)
+		point(this[PLAYER_X]-1, this[PLAYER_Y]+1, SKY_BLUE)
+
+		point(this[PLAYER_X]-4, this[PLAYER_Y], SKY_BLUE)
+		point(this[PLAYER_X]-3, this[PLAYER_Y], SKY_BLUE)
+		point(this[PLAYER_X]-2, this[PLAYER_Y], SKY_BLUE)
+		point(this[PLAYER_X]-1, this[PLAYER_Y], SKY_BLUE)
+		point(this[PLAYER_X], this[PLAYER_Y], SKY_BLUE)
+
+
+		this[PLAYER_X] -> (this[PLAYER_X] + (sign(mouse_x() - this[PLAYER_X]) * this[PLAYER_VELOCITY]))
+		
+		#this[PLAYER_X] -> (this[PLAYER_X] + (1 * this[PLAYER_VELOCITY]))
+
+def Player_draw(this)
+	x -> min(max(this[PLAYER_X], 0), 96)
+	y -> min(max(this[PLAYER_Y], 0), 99)
+
+	point(x, this[PLAYER_Y]-1, BROWN)
+	point(x+1, this[PLAYER_Y]-2, BROWN)
+	point(x+2, this[PLAYER_Y]-3, BROWN)
+	point(x+3, this[PLAYER_Y]-4, BROWN)
+
+	point(x-3, this[PLAYER_Y]+1, WHITE)
+	point(x-2, this[PLAYER_Y]+1, WHITE)
+	point(x-1, this[PLAYER_Y]+1, WHITE)
+
+	point(x-4, this[PLAYER_Y], WHITE)
+	point(x-3, this[PLAYER_Y], WHITE)
+	point(x-2, this[PLAYER_Y], WHITE)
+	point(x-1, this[PLAYER_Y], WHITE)
+	point(x, this[PLAYER_Y], WHITE)
+
+
+# ---------------------------------
+# Fishlineクラス
+# ---------------------------------
+const FISHLINE_X -> 0
+const FISHLINE_Y -> 1
+const FISHLINE_LENGTH -> 2
+const FISHLINE_DROP_FLAG -> 3
+const FISHLINE_BOTTOM_FLAG -> 4
+
+def Fishline_new(this)
+	this[FISHLINE_X] -> Player_get_x(PLAYER_NUMBER) + 4
+	this[FISHLINE_Y] -> Player_get_y(PLAYER_NUMBER) - 3
+	this[FISHLINE_DROP_FLAG] -> 0
+	this[FISHLINE_BOTTOM_FLAG] -> 0
+
+def Fishline_get_x(this)
+	out -> this[FISHLINE_X]
+
+def Fishline_get_y(this)
+	out -> this[FISHLINE_Y]
+
+def Fishline_drop(this)
+
+	# 底に着いたらフラグを立てる
+	if this[FISHLINE_Y] >= 96
+		this[FISHLINE_BOTTOM_FLAG] -> 1
+
+	# 海の底に着いたら釣り糸を引く
+	if this[FISHLINE_BOTTOM_FLAG]
+
+		# 空と海の色を分けて塗る
+		if this[FISHLINE_Y] < 26
+			point(this[FISHLINE_X], this[FISHLINE_Y], SKY_BLUE)
+		if this[FISHLINE_Y] >= 26
+			point(this[FISHLINE_X], this[FISHLINE_Y], MARINE_BLUE)
+
+		this[FISHLINE_Y] -> this[FISHLINE_Y] - 1
+
+		# 釣り糸が元にもどったらまた船が動ける
+		if this[FISHLINE_Y] = (Player_get_y(PLAYER_NUMBER) - 4)
+			Fishline_clear_drop_flag(FISHLINE_NUMBER)
+			this[FISHLINE_BOTTOM_FLAG] -> 0
+
+	# 釣り糸を垂らし始めたとき釣り針が下がる
+	if (this[FISHLINE_Y] < 96) * this[FISHLINE_BOTTOM_FLAG] = 0
+		this[FISHLINE_Y] -> this[FISHLINE_Y] + 1
+
+
+
+# 釣り糸を垂らしているかどうか
+def Fishline_get_drop_flag(this)
+	out -> this[FISHLINE_DROP_FLAG]
+
+# 釣り糸を垂らしている状態に(FLAGを1に)
+def Fishline_set_drop_flag(this)
+	this[FISHLINE_DROP_FLAG] -> 1
+
+# 釣り糸を垂らしていない状態に(FLAGを1に)
+def Fishline_clear_drop_flag(this)
+	this[FISHLINE_DROP_FLAG] -> 0
+
+def Fishline_draw(this)
+
+	point(this[FISHLINE_X], this[FISHLINE_Y], SKY_BLUE)
+	this[FISHLINE_X] -> Player_get_x(0) + 3
+	x -> min(max(this[FISHLINE_X], 3), 99)
+
+	y -> Player_get_y(PLAYER_NUMBER)-3
+	while y <= Fishline_get_y(this)
+		point(Fishline_get_x(this), y, WHITE)
+		y -> y + 1
+	point(Fishline_get_x(this), Fishline_get_y(this), GLAY)
+
+
+# ---------------------------------
+# Fishクラス
+# ---------------------------------
+
+const FISH_X -> 0
+const FISH_Y -> 1
+const FISH_VELOCITY -> 2
+const DIRECTION -> 3
+const CATCH_FLAG -> 4
+const MOVE_FLAG -> 5
+
+def Fish_new(this)
+	this[FISH_X] -> random(this, 100)
+	this[FISH_Y] -> random(this, 60) + 30
+	#this[FISH_X] -> 50
+	#this[FISH_Y] -> 50
+	this[MOVE_FLAG] -> 0
+	# 60の約数
+	this[FISH_VELOCITY] -> 30 # 魚の速度
+	this[DIRECTION] -> -1
+	if modulo(this, 2)
+		this[DIRECTION] -> 1
+
+
+def Fish_move(this)
+	# もしフラグが立っていたら魚が移動
+	if Fish_move_flag(this)
+
+		# 端っこに着いたら方向が反対に
+		if (this[FISH_X] = -15) + (this[FISH_X] = 115)
+			this[DIRECTION] -> -1 * this[DIRECTION]
+
+		this[FISH_X] -> this[FISH_X] + this[DIRECTION]
+
+# 動くかどうかのフラグ
+def Fish_move_flag(this)
+	this[MOVE_FLAG] -> 0
+	if modulo(Timer_get_count(MAIN_TIME), (60 / this[FISH_VELOCITY]) ) = 0
+		this[MOVE_FLAG] -> 1
+	out -> this[MOVE_FLAG]
+
+
+def Fish_draw(this)
+	point(this[FISH_X], this[FISH_Y], BLACK)
+	x -> 0
+	y -> 0
+	while y < 5
+		while x < 11
+			point(this[FISH_X] + (this[DIRECTION] * -x), this[FISH_Y] + y, RED)
+			if ((y = 0) + (y = 4) + (x = 0) + (x = 10))
+				point(this[FISH_X] + (this[DIRECTION] * -x), this[FISH_Y] + y, MARINE_BLUE)
+			x -> x + 1
+		y -> y + 1
+		x -> 1
+
+	point(this[FISH_X]                         , this[FISH_Y] +2, RED)
+	point(this[FISH_X] + (this[DIRECTION] * -4), this[FISH_Y]   , RED)
+	point(this[FISH_X] + (this[DIRECTION] * -4), this[FISH_Y] +4, RED)
+	point(this[FISH_X] + (this[DIRECTION] * -7), this[FISH_Y] +1, MARINE_BLUE)
+	point(this[FISH_X] + (this[DIRECTION] * -7), this[FISH_Y] +3, MARINE_BLUE)
+	point(this[FISH_X] + (this[DIRECTION] * -9), this[FISH_Y] +2, MARINE_BLUE)
+
+
+
+# ---------------------------------
+# タイマークラス
+# ---------------------------------
+
+const COUNT -> 0
+const SECOND -> 1
+const CHANGE_FLAG -> 2
+
+def Timer_new(this)
+	this[COUNT] -> 1
+	this[SECOND] -> 0
+	this[CHANGE_FLAG] -> 0
+
+def Timer_get_count(this)
+	out -> this[COUNT]
+
+def Timer_get_second(this)
+	out -> this[SECOND]
+
+def Timer_increment(this)
+	this[CHANGE_FLAG] -> 0
+	this[COUNT] -> this[COUNT] + 1
+	if this[COUNT] = 61
+		this[CHANGE_FLAG] -> 1
+		this[SECOND] -> this[SECOND] + 1
+		this[COUNT] -> 1
+
+def Timer_change_flag(this)
+	out -> this[CHANGE_FLAG]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
