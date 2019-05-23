@@ -47,8 +47,16 @@ while up_key() = 0
 
 	Fish_move(FISH_NUMBER)
 
-
-	Number_draw(MAIN_NUM, ONE)
+	#Number_draw(MAIN_NUM, ZERO)
+	#Number_draw(MAIN_NUM, ONE)
+	#Number_draw(MAIN_NUM, TWO)
+	#Number_draw(MAIN_NUM, THREE)
+	#Number_draw(MAIN_NUM, FOUR)
+	#Number_draw(MAIN_NUM, FIVE)
+	#Number_draw(MAIN_NUM, SIX, 90, 2)
+	#Number_draw(MAIN_NUM, SEVEN)
+	#Number_draw(MAIN_NUM, EIGHT)
+	#Number_draw(MAIN_NUM, NINE, 90, 2)
 
 	# 左クリックで釣り糸フラグを立てる
 	if left_click()
@@ -522,8 +530,8 @@ const SECOND -> 1
 const CHANGE_FLAG -> 2
 
 def Timer_new(this)
-	this[COUNT] -> 1
-	this[SECOND] -> 0
+	this[COUNT] -> 0
+	this[SECOND] -> 60
 	this[CHANGE_FLAG] -> 0
 
 def Timer_get_count(this)
@@ -535,10 +543,28 @@ def Timer_get_second(this)
 def Timer_increment(this)
 	this[CHANGE_FLAG] -> 0
 	this[COUNT] -> this[COUNT] + 1
-	if this[COUNT] = 61
+	ten -> this[SECOND] / 10
+	second -> modulo(this[SECOND], 10)
+
+	x -> 90
+	y -> 0
+	while y < 9
+		while x < 100
+			point(x, y, SKY_BLUE)
+			x -> x + 1
+		y -> y + 1
+		x -> 90
+
+	#60フレームごと
+	if this[COUNT] = 60
 		this[CHANGE_FLAG] -> 1
-		this[SECOND] -> this[SECOND] + 1
-		this[COUNT] -> 1
+		this[SECOND] -> this[SECOND] - 1
+		this[COUNT] -> 0
+
+	Number_draw(MAIN_NUM, ten*20, 90, 2, WHITE)
+	Number_draw(MAIN_NUM, second*20, 94, 2, WHITE)
+	
+
 
 def Timer_change_flag(this)
 	out -> this[CHANGE_FLAG]
@@ -549,12 +575,77 @@ def Timer_change_flag(this)
 
 const ZERO -> 0
 const ONE -> 20
+const TWO -> 40
+const THREE -> 60
+const FOUR-> 80
+const FIVE -> 100
+const SIX -> 120
+const SEVEN -> 140
+const EIGHT -> 160
+const NINE-> 180
+
 def Number_new(this)
+	Number_create_zero(this, ZERO)
 	Number_create_one(this, ONE)
+	Number_create_two(this, TWO)
+	Number_create_three(this, THREE)
+	Number_create_four(this, FOUR)
+	Number_create_five(this, FIVE)
+	Number_create_six(this, SIX)
+	Number_create_seven(this, SEVEN)
+	Number_create_eight(this, EIGHT)
+	Number_create_nine(this, NINE)
+
+# 2 1
+# 5 4 3
+def Number_create_zero(this, num)
+	num_1 -> 101111
+	num_2 -> 111101101
+	Number_create(this, num, num_1, num_2)
 
 def Number_create_one(this, num)
 	num_1 -> 011010
 	num_2 -> 111010010
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_two(this, num)
+	num_1 -> 100111
+	num_2 -> 111001111
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_three(this, num)
+	num_1 -> 100111
+	num_2 -> 111100111
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_four(this, num)
+	num_1 -> 101101
+	num_2 -> 100100111
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_five(this, num)
+	num_1 -> 001111
+	num_2 -> 111100111
+	Number_create(this, num, num_1, num_2)	
+
+def Number_create_six(this, num)
+	num_1 -> 001111
+	num_2 -> 111101111
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_seven(this, num)
+	num_1 -> 101111
+	num_2 -> 100100100
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_eight(this, num)
+	num_1 -> 101111
+	num_2 -> 111101111
+	Number_create(this, num, num_1, num_2)
+
+def Number_create_nine(this, num)
+	num_1 -> 101111
+	num_2 -> 111100111
 	Number_create(this, num, num_1, num_2)
 		
 def Number_create(this, num, num_1, num_2)
@@ -568,13 +659,13 @@ def Number_create(this, num, num_1, num_2)
 			num_2 -> (num_2 / 10)
 		i -> i + 1
 
-def Number_draw(this, num)
+def Number_draw(this, num, left, top, color)
 	i -> 0
 	while i < 15
 		if (this[i + num] = 1)
 			y -> i / 3
 			x -> modulo(i, 3)
-			point(50+x, 50+y, WHITE)
+			point(left+x, top+y, color)
 		i -> i + 1
 
 
