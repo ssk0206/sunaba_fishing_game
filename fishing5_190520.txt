@@ -20,6 +20,7 @@ const SCREEN -> 60000
 const MAIN_TIME -> 1000
 const MAIN_NUM -> 1100
 const MAIN_POINT -> 1300
+const PAUSE -> 1400
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
@@ -37,31 +38,41 @@ initialize_game()
 
 
 while up_key() = 0
-	memory[55000] -> 1
-	# 釣り糸を垂らし始めたら釣り針が下がる
-	if Fishline_get_drop_flag(FISHLINE_NUMBER) = 1
-		Fishline_drop(FISHLINE_NUMBER)
+	if memory[PAUSE] = 1
+		memory[55000] -> 1
+		# 釣り糸を垂らし始めたら釣り針が下がる
+		if Fishline_get_drop_flag(FISHLINE_NUMBER) = 1
+			Fishline_drop(FISHLINE_NUMBER)
 
-	# 釣り糸を垂らし始めたら船は動けない
-	if Fishline_get_drop_flag(FISHLINE_NUMBER) = 0
-		Player_move(PLAYER_NUMBER)
+		# 釣り糸を垂らし始めたら船は動けない
+		if Fishline_get_drop_flag(FISHLINE_NUMBER) = 0
+			Player_move(PLAYER_NUMBER)
 
-	Player_draw(PLAYER_NUMBER)
+		Player_draw(PLAYER_NUMBER)
 
-	Fish_move(FISH1)
-	Fish_move(FISH2)
-	Fish_move(FISH3)
-	Fish_move(FISH4)
+		Fish_move(FISH1)
+		Fish_move(FISH2)
+		Fish_move(FISH3)
+		Fish_move(FISH4)
 
-	# 左クリックで釣り糸フラグを立てる
-	if left_click()
-		Fishline_set_drop_flag(FISHLINE_NUMBER)
+		# 左クリックで釣り糸フラグを立てる
+		if left_click()
+			Fishline_set_drop_flag(FISHLINE_NUMBER)
 
-	Fishline_draw(FISHLINE_NUMBER)
+		Fishline_draw(FISHLINE_NUMBER)
 
-	Timer_increment(MAIN_TIME)
-	if enter_key()
-		initialize_game()
+		Timer_increment(MAIN_TIME)
+		if enter_key()
+			initialize_game()
+	
+		if space_key()
+			memory[PAUSE] -> -1
+
+	if memory[PAUSE] = -1
+		memory[55000] -> 1
+		if left_click()
+			memory[PAUSE] -> 1
+
 
 # ---------------------------------
 # ゲーム画面
@@ -71,6 +82,7 @@ while up_key() = 0
 # ゲーム初期化
 #
 def initialize_game()
+	memory[PAUSE] -> 1
 	create_sky()
 	create_sun()
 	create_sea()
@@ -176,6 +188,12 @@ def left_click()
 #
 def up_key()
 	out -> memory[50004]
+
+#
+# スペースキー
+#
+def space_key()
+	out -> memory[50008]
 
 #
 # エンターキー
