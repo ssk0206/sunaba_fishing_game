@@ -23,7 +23,10 @@ const MAIN_POINT -> 1300
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
-const FISH_NUMBER -> 20
+const FISH1 -> 20
+const FISH2 -> 30
+const FISH3 -> 40
+const FISH4 -> 50
 const COLLITION_NUMBER -> 1050
 
 # ---------------------------------
@@ -45,7 +48,10 @@ while up_key() = 0
 
 	Player_draw(PLAYER_NUMBER)
 
-	Fish_move(FISH_NUMBER)
+	Fish_move(FISH1)
+	Fish_move(FISH2)
+	Fish_move(FISH3)
+	Fish_move(FISH4)
 
 	# 左クリックで釣り糸フラグを立てる
 	if left_click()
@@ -72,7 +78,10 @@ def initialize_game()
 	Player_new(PLAYER_NUMBER)
 	Fishline_new(FISHLINE_NUMBER)
 	Timer_new(MAIN_TIME)
-	Fish_new(FISH_NUMBER)
+	Fish_new(FISH1)
+	Fish_new(FISH2)
+	Fish_new(FISH3)
+	Fish_new(FISH4)
 	Collision_new(COLLITION_NUMBER)
 	Number_new(MAIN_NUM)
 	Point_new(MAIN_POINT)
@@ -314,18 +323,32 @@ const FISHLINE_Y -> 1
 const FISHLINE_LENGTH -> 2
 const FISHLINE_DROP_FLAG -> 3
 const FISHLINE_BOTTOM_FLAG -> 4
+const FISHLINE_VELOCITY -> 5
+const FISHLINE_MOVE_FLAG -> 6
 
 def Fishline_new(this)
 	this[FISHLINE_X] -> Player_get_x(PLAYER_NUMBER) + 4
 	this[FISHLINE_Y] -> Player_get_y(PLAYER_NUMBER) - 3
 	this[FISHLINE_DROP_FLAG] -> 0
 	this[FISHLINE_BOTTOM_FLAG] -> 0
+	this[FISHLINE_VELOCITY] -> 30
+	this[FISHLINE_MOVE_FLAG] -> 0
 
 def Fishline_get_x(this)
 	out -> this[FISHLINE_X]
 
 def Fishline_get_y(this)
 	out -> this[FISHLINE_Y]
+
+def Fishline_hit_Fish(this)
+	this[FISHLINE_BOTTOM_FLAG] -> 1
+
+# このフレームに釣り針が動くかどうかのフラグ
+def Fishline_move_flag(this)
+	this[FISHLINE_MOVE_FLAG] -> 0
+	if modulo(Timer_get_count(MAIN_TIME), (60 / this[FISHLINE_VELOCITY]) ) = 0
+		this[FISHLINE_MOVE_FLAG] -> 1
+	out -> this[FISHLINE_MOVE_FLAG]
 
 def Fishline_drop(this)
 
@@ -342,7 +365,9 @@ def Fishline_drop(this)
 		if this[FISHLINE_Y] >= 26
 			point(this[FISHLINE_X], this[FISHLINE_Y], MARINE_BLUE)
 
-		this[FISHLINE_Y] -> this[FISHLINE_Y] - 1
+		# 釣り針が上がる
+		if Fishline_move_flag(this)
+			this[FISHLINE_Y] -> this[FISHLINE_Y] - 1
 
 		# 釣り糸が元にもどったらまた船が動ける
 		if this[FISHLINE_Y] = (Player_get_y(PLAYER_NUMBER) - 4)
@@ -350,7 +375,7 @@ def Fishline_drop(this)
 			this[FISHLINE_BOTTOM_FLAG] -> 0
 
 	# 釣り糸を垂らし始めたとき釣り針が下がる
-	if (this[FISHLINE_Y] < 96) * this[FISHLINE_BOTTOM_FLAG] = 0
+	if (this[FISHLINE_Y] < 96) * (this[FISHLINE_BOTTOM_FLAG] = 0) * Fishline_move_flag(this)
 		this[FISHLINE_Y] -> this[FISHLINE_Y] + 1
 
 
@@ -398,11 +423,11 @@ def Fish_new(this)
 	#this[FISH_X] -> random(this, 100)
 	#this[FISH_Y] -> random(this, 60) + 30
 	this[FISH_X] -> 103
-	this[FISH_Y] -> 50
+	this[FISH_Y] -> this + 25
 	this[MOVE_FLAG] -> 0
 	this[CATCH_FLAG] -> 0
 	# 60の約数
-	this[FISH_VELOCITY] -> 30 # 魚の速度
+	this[FISH_VELOCITY] -> 60 - this # 魚の速度
 	this[DIRECTION] -> -1
 	if modulo(this, 2)
 		this[DIRECTION] -> 1
@@ -427,7 +452,7 @@ def Fish_move(this)
 
 		this[FISH_X] -> this[FISH_X] + this[DIRECTION]
 	
-		Fish_draw(FISH_NUMBER)
+		Fish_draw(this)
 
 	# もしキャッチされていたら魚が上に上がる
 	if this[CATCH_FLAG]
@@ -442,12 +467,11 @@ def Fish_move_flag(this)
 
 # 釣られたらCATCH_FLAGを立てる
 def Fish_catch(this)
-	
 	this[CATCH_FLAG] -> 1
 
 def Fish_up(this)
 	#this[FISH_X] -> Fishline_get_x(FISHLINE_NUMBER)
-	this[FISH_Y] -> Fishline_get_y(FISHLINE_NUMBER)
+	this[FISH_Y] -> Fishline_get_y(FISHLINE_NUMBER) - 2
 	# もし水面まであがったら
 	if this[FISH_Y] <= 26
 		Fish_change_point(this)
@@ -464,14 +488,14 @@ def Fish_change_point(this)
 def Fish_draw(this)
 
 	point(this[FISH_X], this[FISH_Y], BLACK)
-	x -> -1
-	y -> -1
+	x -> 0
+	y -> 0
 	while y < 6
-		while x < 12
+		while x < 11
 			point(this[FISH_X] + (this[DIRECTION] * -x), this[FISH_Y] + y, MARINE_BLUE)
 			x -> x + 1
 		y -> y + 1
-		x -> -1
+		x -> 0
 
 	x -> 0
 	y -> 0
@@ -523,6 +547,7 @@ def Collition_hit(this, fish_number)
 		create_sea()
 		fish_number[CREATE_SEA_FLAG] -> 0
 	Fish_catch(fish_number)
+	Fishline_hit_Fish(FISHLINE_NUMBER)
 
 
 
