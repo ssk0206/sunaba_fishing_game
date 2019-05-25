@@ -21,6 +21,7 @@ const MAIN_TIME -> 1000
 const MAIN_NUM -> 1100
 const MAIN_POINT -> 1300
 const PAUSE -> 1400
+const GAME -> 1999
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
@@ -37,7 +38,7 @@ const COLLITION_NUMBER -> 1050
 initialize_game()
 
 
-while up_key() = 0
+while memory[GAME]
 	if memory[PAUSE] = 1
 		memory[55000] -> 1
 		# 釣り糸を垂らし始めたら釣り針が下がる
@@ -82,6 +83,7 @@ while up_key() = 0
 # ゲーム初期化
 #
 def initialize_game()
+	memory[GAME] -> 1
 	memory[PAUSE] -> 1
 	create_sky()
 	create_sun()
@@ -608,6 +610,9 @@ def Timer_increment(this)
 		this[CHANGE_FLAG] -> 1
 		this[SECOND] -> this[SECOND] - 1
 		this[COUNT] -> 0
+		if this[SECOND] = -1
+			memory[GAME] -> 0
+
 
 	Number_draw(MAIN_NUM, ten*20, 90, 2, WHITE)
 	Number_draw(MAIN_NUM, second*20, 94, 2, WHITE)
