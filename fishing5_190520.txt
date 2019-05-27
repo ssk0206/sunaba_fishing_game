@@ -21,6 +21,7 @@ const MAIN_TIME -> 1000
 const MAIN_NUM -> 1100
 const MAIN_POINT -> 1300
 const PAUSE -> 1400
+const ALPHABET -> 1500
 const GAME -> 1999
 const SPACE_KEY_FLAG -> 1998
 
@@ -62,7 +63,7 @@ while memory[GAME]
 			Fishline_set_drop_flag(FISHLINE_NUMBER)
 
 		Fishline_draw(FISHLINE_NUMBER)
-
+		#Alphabet_create_word(ALPHABET, 4, 1020324, 50, 50 ,WHITE)
 		Timer_increment(MAIN_TIME)
 		if enter_key()
 			initialize_game()
@@ -84,7 +85,14 @@ while memory[GAME]
 			# 再開
 			resume()
 			create_pause(MARINE_BLUE)
-			
+
+
+# SCORE表示
+Alphabet_create_word(ALPHABET, 3, 151805, 42, 50 ,WHITE)
+Alphabet_create_word(ALPHABET, 2, 1903, 30, 50 ,WHITE)
+
+Point_draw(MAIN_POINT, MAIN_POINT[0], 64, 50)
+Number_draw(MAIN_NUM, 0, 64, 50, WHITE)
 
 # ---------------------------------
 # ゲーム画面
@@ -110,6 +118,7 @@ def initialize_game()
 	Collision_new(COLLITION_NUMBER)
 	Number_new(MAIN_NUM)
 	Point_new(MAIN_POINT)
+	Alphabet_new(ALPHABET)
 
 #
 # 一時停止
@@ -821,3 +830,221 @@ def Point_draw(this, point, x, y)
 		num -> modulo(point, 10)
 		Number_draw(MAIN_NUM, num*20, x, y, WHITE)	
 	x -> original_x
+
+# ------------------------------------
+# アルファベットクラス Alphabet
+# ------------------------------------
+const A -> 1
+const B -> 2
+const C -> 3
+const D -> 4
+const E -> 5
+const F -> 6
+const G -> 7
+const H -> 8
+const I -> 9
+const J -> 10
+const K -> 11
+const L -> 12
+const M -> 13
+const N -> 14
+const O -> 15
+const P -> 16
+const Q -> 17
+const R -> 18
+const S -> 19
+const T -> 20
+const U -> 21
+const V -> 22
+const W -> 23
+const X -> 24
+const Y -> 25
+const Z -> 26
+
+def Alphabet_new(this)
+	a(this, A)
+	b(this, B)
+	c(this, C)
+	d(this, D)
+	e(this, E)
+	f(this, F)
+	g(this, G)
+	h(this, H)
+	i(this, I)
+	j(this, J)
+	k(this, K)
+	l(this, L)
+	m(this, M)
+	n(this, N)
+	o(this, O)
+	p(this, P)
+	q(this, Q)
+	r(this, R)
+	s(this, S)
+	t(this, T)
+	u(this, U)
+	v(this, V)
+	w(this, W)
+	x(this, X)
+	y(this, Y)
+	z(this, Z)
+
+
+def a(this, alphabet)
+	num_1 -> 101010
+	num_2 -> 101101111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def b(this, alphabet)
+	num_1 -> 101011
+	num_2 -> 011101011
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def c(this, alphabet)
+	num_1 -> 101010
+	num_2 -> 010101001
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def d(this, alphabet)
+	num_1 -> 101011
+	num_2 -> 011101101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def e(this, alphabet)
+	num_1 -> 001111
+	num_2 -> 111001111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def f(this, alphabet)
+	num_1 -> 001111
+	num_2 -> 001001111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def g(this, alphabet)
+	num_1 -> 001110
+	num_2 -> 110101111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def h(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 101101111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def i(this, alphabet)
+	num_1 -> 010111
+	num_2 -> 111010010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def j(this, alphabet)
+	num_1 -> 100100
+	num_2 -> 010101100
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def k(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 101101011
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def l(this, alphabet)
+	num_1 -> 001001
+	num_2 -> 111001001
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def m(this, alphabet)
+	num_1 -> 111101
+	num_2 -> 101101111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def n(this, alphabet)
+	num_1 -> 101011
+	num_2 -> 101101101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def o(this, alphabet)
+	num_1 -> 101010
+	num_2 -> 010101101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def p(this, alphabet)
+	num_1 -> 101011
+	num_2 -> 001001011
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def q(this, alphabet)
+	num_1 -> 101010
+	num_2 -> 110010101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def r(this, alphabet)
+	num_1 -> 101011
+	num_2 -> 101101011
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def s(this, alphabet)
+	num_1 -> 001110
+	num_2 -> 011100010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def t(this, alphabet)
+	num_1 -> 010111
+	num_2 -> 010010010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def u(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 111101101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def v(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 010101101
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def w(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 101111111
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def x(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 101101010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def y(this, alphabet)
+	num_1 -> 101101
+	num_2 -> 010010010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+def z(this, alphabet)
+	num_1 -> 100111
+	num_2 -> 111001010
+	Alphabet_create(this, alphabet, num_1, num_2)
+
+
+def Alphabet_create(this, alphabet, num_1, num_2)
+	alphabet -> alphabet * 20
+	i -> 0
+	while i < 15
+		if i < 6
+			this[alphabet + i] -> modulo(num_1, 10)
+			num_1 -> (num_1 / 10)
+		if i >= 6
+			this[alphabet + i] -> modulo(num_2, 10)
+			num_2 -> (num_2 / 10)
+		i -> i + 1
+
+def Alphabet_create_word(this, numbers, word, left, top, color)
+	while numbers > 0
+		Alphabet_draw(this, modulo(word, 100), left, top, color)
+		word -> word / 100
+		left -> left - 4
+		numbers -> numbers - 1
+
+def Alphabet_draw(this, alphabet, left, top, color)
+	i -> 0
+	while i < 15
+		if (this[i + (alphabet * 20)] = 1)
+			y -> i / 3
+			x -> modulo(i, 3)
+			point(left+x, top+y, color)
+		i -> i + 1
