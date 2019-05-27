@@ -22,6 +22,7 @@ const MAIN_NUM -> 1100
 const MAIN_POINT -> 1300
 const PAUSE -> 1400
 const GAME -> 1999
+const SPACE_KEY_FLAG -> 1998
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
@@ -67,13 +68,23 @@ while memory[GAME]
 			initialize_game()
 	
 		if space_key()
-			memory[PAUSE] -> -1
+			memory[PAUSE] -> 0
+		
+		if up_key()
+			memory[GAME] -> 0
+		
+		if space_key()
+			create_pause(WHITE)
+			# 一時停止
+			pause()
 
-	if memory[PAUSE] = -1
+	if memory[PAUSE] = 0
 		memory[55000] -> 1
-		if left_click()
-			memory[PAUSE] -> 1
-
+		if space_key()
+			# 再開
+			resume()
+			create_pause(MARINE_BLUE)
+			
 
 # ---------------------------------
 # ゲーム画面
@@ -99,6 +110,41 @@ def initialize_game()
 	Collision_new(COLLITION_NUMBER)
 	Number_new(MAIN_NUM)
 	Point_new(MAIN_POINT)
+
+#
+# 一時停止
+#
+def pause()
+	flag -> 1	
+	while flag
+		if space_key() = 0
+			memory[PAUSE] -> 0
+			flag -> 0
+
+#
+# 再開
+#
+def resume()
+	flag -> 1	
+	while flag
+		if space_key() = 0
+			memory[PAUSE] -> 1
+			flag -> 0
+
+#
+# ポーズ画面作成
+#
+def create_pause(color)
+	x -> 30
+	y -> 40
+	while y <= 60
+		while x <= 70
+			if ((x = 30) + (x = 70) + (y = 40) + (y = 60)) > 0
+				point(x, y, color)
+			x -> x + 1
+		y -> y + 1
+		x -> 30
+
 
 #
 # 空を作成
@@ -775,4 +821,3 @@ def Point_draw(this, point, x, y)
 		num -> modulo(point, 10)
 		Number_draw(MAIN_NUM, num*20, x, y, WHITE)	
 	x -> original_x
-
