@@ -1020,7 +1020,9 @@ def z(this, alphabet)
 	num_2 -> 111001010
 	Alphabet_create(this, alphabet, num_1, num_2)
 
-
+#
+# アルファベット作成
+#
 def Alphabet_create(this, alphabet, num_1, num_2)
 	alphabet -> alphabet * 20
 	i -> 0
@@ -1033,6 +1035,9 @@ def Alphabet_create(this, alphabet, num_1, num_2)
 			num_2 -> (num_2 / 10)
 		i -> i + 1
 
+#
+# 単語作成
+#
 def Alphabet_create_word(this, numbers, word, left, top, color)
 	while numbers > 0
 		Alphabet_draw(this, modulo(word, 100), left, top, color)
@@ -1040,6 +1045,9 @@ def Alphabet_create_word(this, numbers, word, left, top, color)
 		left -> left - 4
 		numbers -> numbers - 1
 
+#
+# アルファベット描画
+#
 def Alphabet_draw(this, alphabet, left, top, color)
 	i -> 0
 	while i < 15
