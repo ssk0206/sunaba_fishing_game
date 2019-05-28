@@ -112,7 +112,7 @@ while memory[GAME]
 		
 		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (40 <= mouse_y()) * (mouse_y() <= 50)
 			Point_add(MAIN_POINT, -50 * memory[LEVEL])
-			memory[LEVEL] -> memory[LEVEL] + 1
+			click(LEVEL)
 			clear_pause(MARINE_BLUE)
 			create_pause(WHITE)
 			if memory[LEVEL] = 2
@@ -124,13 +124,13 @@ while memory[GAME]
 			
 		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (50 <= mouse_y()) * (mouse_y() <= 60)
 			Point_add(MAIN_POINT, -50 * memory[SHIP_LEVEL])
-			memory[SHIP_LEVEL] -> memory[SHIP_LEVEL] + 1
+			click(SHIP_LEVEL)
 			clear_pause(MARINE_BLUE)
 			create_pause(WHITE)
 			if memory[SHIP_LEVEL] = 2
 				FISHLINE_NUMBER[FISHLINE_VELOCITY] -> 60
 			if memory[SHIP_LEVEL] = 3
-				
+
 # SCORE表示
 create_sea()
 
@@ -283,6 +283,17 @@ def create_sea()
 # ---------------------------------
 # ライブラリ
 # ---------------------------------
+
+#
+# クリック関数
+#
+def click(level)
+	flag -> 1
+	while flag
+		if left_click() = 0
+			memory[level] -> memory[level] + 1
+			flag -> 0
+
 
 #
 # 点を描画
