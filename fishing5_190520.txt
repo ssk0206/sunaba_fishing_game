@@ -14,7 +14,7 @@ const SILVER -> 888888
 const GOLD -> 999900
 const BROWN -> 992222
 const MARINE_BLUE -> 004577
-const RED -> 990000
+const RED -> 995555
 const SKY_BLUE -> 668699
 const SUN_RED -> 883300
 
@@ -41,6 +41,7 @@ const FISH7 -> 90
 const FISH8 -> 100
 
 const LEVEL -> 190
+const SHIP_LEVEL -> 191
 
 const FISH_NUMBERS -> 200
 const COLLITION_NUMBER -> 1050
@@ -106,22 +107,33 @@ while memory[GAME]
 		if space_key()
 			# 再開
 			resume()
-			create_pause(MARINE_BLUE)
+			#create_pause(MARINE_BLUE)
+			clear_pause(MARINE_BLUE)
 		
-		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL]))
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (40 <= mouse_y()) * (mouse_y() <= 50)
 			Point_add(MAIN_POINT, -50 * memory[LEVEL])
-			resume()
-			create_pause(MARINE_BLUE)
-			if memory[LEVEL] = 1
+			memory[LEVEL] -> memory[LEVEL] + 1
+			clear_pause(MARINE_BLUE)
+			create_pause(WHITE)
+			if memory[LEVEL] = 2
 				Fish_new(FISH5)
 				Fish_new(FISH6)
-			if memory[LEVEL] = 2
+			if memory[LEVEL] = 3
 				Fish_new(FISH7)
 				Fish_new(FISH8)
-			memory[LEVEL] -> memory[LEVEL] + 1
-
-
+			
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (50 <= mouse_y()) * (mouse_y() <= 60)
+			Point_add(MAIN_POINT, -50 * memory[SHIP_LEVEL])
+			memory[SHIP_LEVEL] -> memory[SHIP_LEVEL] + 1
+			clear_pause(MARINE_BLUE)
+			create_pause(WHITE)
+			if memory[SHIP_LEVEL] = 2
+				FISHLINE_NUMBER[FISHLINE_VELOCITY] -> 60
+			if memory[SHIP_LEVEL] = 3
+				
 # SCORE表示
+create_sea()
+
 Alphabet_create_word(ALPHABET, 3, 151805, 42, 50 ,WHITE)
 Alphabet_create_word(ALPHABET, 2, 1903, 30, 50 ,WHITE)
 
@@ -139,6 +151,7 @@ def initialize_game()
 	memory[GAME] -> 1
 	memory[PAUSE] -> 1
 	memory[LEVEL] -> 1
+	memory[SHIP_LEVEL] -> 1
 	create_sky()
 	create_sun()
 	create_sea()
@@ -180,16 +193,36 @@ def resume()
 # ポーズ画面作成
 #
 def create_pause(color)
+	clear_pause(MARINE_BLUE)
 	x -> 30
 	y -> 40
 	while y <= 60
 		while x <= 70
 			if ((x = 30) + (x = 70) + (y = 40) + (y = 60)) > 0
 				point(x, y, color)
+			if y = 50
+				point(x, y, color)
 			x -> x + 1
 		y -> y + 1
 		x -> 30
+	Alphabet_create_word(ALPHABET, 4, 06091908, 48, 43, color)
+	Number_draw(MAIN_NUM, memory[LEVEL]*20, 60, 43, WHITE)
 
+	Alphabet_create_word(ALPHABET, 4, 19080916, 48, 53, color)
+	Number_draw(MAIN_NUM, memory[SHIP_LEVEL]*20, 60, 53, WHITE)
+
+#
+# ポーズ画面リセット
+#
+def clear_pause(color)
+	x -> 30
+	y -> 40
+	while y <= 60
+		while x <= 70
+			point(x, y, color)
+			x -> x + 1
+		y -> y + 1
+		x -> 30
 
 #
 # 空を作成
