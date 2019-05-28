@@ -110,7 +110,7 @@ while memory[GAME]
 			#create_pause(MARINE_BLUE)
 			clear_pause(MARINE_BLUE)
 		
-		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (40 <= mouse_y()) * (mouse_y() <= 50)
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (40 <= mouse_y()) * (mouse_y() <= 50)
 			Point_add(MAIN_POINT, -50 * memory[LEVEL])
 			click(LEVEL)
 			clear_pause(MARINE_BLUE)
@@ -122,14 +122,13 @@ while memory[GAME]
 				Fish_new(FISH7)
 				Fish_new(FISH8)
 			
-		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (30 <= mouse_x()) * (mouse_x() <= 70) * (50 <= mouse_y()) * (mouse_y() <= 60)
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (50 <= mouse_y()) * (mouse_y() <= 60)
 			Point_add(MAIN_POINT, -50 * memory[SHIP_LEVEL])
 			click(SHIP_LEVEL)
 			clear_pause(MARINE_BLUE)
 			create_pause(WHITE)
 			if memory[SHIP_LEVEL] = 2
 				FISHLINE_NUMBER[FISHLINE_VELOCITY] -> 60
-			if memory[SHIP_LEVEL] = 3
 
 # SCORE表示
 create_sea()
@@ -194,35 +193,55 @@ def resume()
 #
 def create_pause(color)
 	clear_pause(MARINE_BLUE)
-	x -> 30
+	x -> 15
 	y -> 40
 	while y <= 60
-		while x <= 70
-			if ((x = 30) + (x = 70) + (y = 40) + (y = 60)) > 0
+		while x <= 85
+			if ((x = 15) + (x = 85) + (y = 40) + (y = 60)) > 0
 				point(x, y, color)
 			if y = 50
 				point(x, y, color)
 			x -> x + 1
 		y -> y + 1
-		x -> 30
-	Alphabet_create_word(ALPHABET, 4, 06091908, 48, 43, color)
-	Number_draw(MAIN_NUM, memory[LEVEL]*20, 60, 43, WHITE)
+		x -> 15
 
-	Alphabet_create_word(ALPHABET, 4, 19080916, 48, 53, color)
-	Number_draw(MAIN_NUM, memory[SHIP_LEVEL]*20, 60, 53, WHITE)
+	# FISH
+	Alphabet_create_word(ALPHABET, 4, 06091908, 34, 43, WHITE)
+	# LV
+	Alphabet_create_word(ALPHABET, 2, 1222, 48, 43, WHITE)
+	Number_draw(MAIN_NUM, memory[LEVEL]*20, 55, 43, WHITE)
+
+	if memory[LEVEL] = 1
+		Number_draw(MAIN_NUM, memory[LEVEL]*20 *5, 70, 43, WHITE)
+		Number_draw(MAIN_NUM, 0, 74, 43, WHITE)
+		Alphabet_draw(ALPHABET, P, 80, 43, WHITE)
+	if memory[LEVEL] = 2
+		Number_draw(MAIN_NUM, memory[LEVEL]*20 *5 / 10, 66, 43, WHITE)
+		Number_draw(MAIN_NUM, 0, 70, 43, WHITE)
+		Number_draw(MAIN_NUM, 0, 74, 43, WHITE)
+		Alphabet_draw(ALPHABET, P, 80, 43, WHITE)
+
+	Alphabet_create_word(ALPHABET, 4, 19080916, 34, 53, WHITE)
+	Alphabet_create_word(ALPHABET, 2, 1222, 48, 53, WHITE)
+	Number_draw(MAIN_NUM, memory[SHIP_LEVEL]*20, 55, 53, WHITE)
+
+	if memory[SHIP_LEVEL] = 1
+		Number_draw(MAIN_NUM, memory[SHIP_LEVEL]*20 *5, 70, 53, WHITE)
+		Number_draw(MAIN_NUM, 0, 74, 53, WHITE)
+		Alphabet_draw(ALPHABET, P, 80, 53, WHITE)
 
 #
 # ポーズ画面リセット
 #
 def clear_pause(color)
-	x -> 30
+	x -> 15
 	y -> 40
 	while y <= 60
-		while x <= 70
+		while x <= 85
 			point(x, y, color)
 			x -> x + 1
 		y -> y + 1
-		x -> 30
+		x -> 15
 
 #
 # 空を作成
@@ -1094,8 +1113,9 @@ def u(this, alphabet)
 	num_2 -> 111101101
 	Alphabet_create(this, alphabet, num_1, num_2)
 
+# 小文字
 def v(this, alphabet)
-	num_1 -> 101101
+	num_1 -> 000000
 	num_2 -> 010101101
 	Alphabet_create(this, alphabet, num_1, num_2)
 
