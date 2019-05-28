@@ -110,7 +110,7 @@ while memory[GAME]
 			#create_pause(MARINE_BLUE)
 			clear_pause(MARINE_BLUE)
 		
-		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (40 <= mouse_y()) * (mouse_y() <= 50)
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (40 <= mouse_y()) * (mouse_y() <= 50) * (memory[LEVEL] <= 2)
 			Point_add(MAIN_POINT, -50 * memory[LEVEL])
 			click(LEVEL)
 			clear_pause(MARINE_BLUE)
@@ -122,7 +122,7 @@ while memory[GAME]
 				Fish_new(FISH7)
 				Fish_new(FISH8)
 			
-		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (50 <= mouse_y()) * (mouse_y() <= 60)
+		if left_click() * (MAIN_POINT[NOW] >= (50 * memory[SHIP_LEVEL])) * (15 <= mouse_x()) * (mouse_x() <= 85) * (50 <= mouse_y()) * (mouse_y() <= 60) * (memory[SHIP_LEVEL] <= 1)
 			Point_add(MAIN_POINT, -50 * memory[SHIP_LEVEL])
 			click(SHIP_LEVEL)
 			clear_pause(MARINE_BLUE)
