@@ -166,6 +166,7 @@ def initialize_game()
 	Number_new(MAIN_NUM)
 	Point_new(MAIN_POINT)
 	Alphabet_new(ALPHABET)
+	Alphabet_draw(ALPHABET, P, 30, 2, WHITE)
 
 #
 # 一時停止
@@ -478,15 +479,19 @@ def Player_draw(this)
 	point(x+2, this[PLAYER_Y]-3, BROWN)
 	point(x+3, this[PLAYER_Y]-4, BROWN)
 
+	#point(x-4, this[PLAYER_Y]+1, WHITE)
 	point(x-3, this[PLAYER_Y]+1, WHITE)
 	point(x-2, this[PLAYER_Y]+1, WHITE)
 	point(x-1, this[PLAYER_Y]+1, WHITE)
 
+	#point(x-5, this[PLAYER_Y], WHITE)
 	point(x-4, this[PLAYER_Y], WHITE)
 	point(x-3, this[PLAYER_Y], WHITE)
 	point(x-2, this[PLAYER_Y], WHITE)
 	point(x-1, this[PLAYER_Y], WHITE)
 	point(x, this[PLAYER_Y], WHITE)
+
+#def Player_image()
 
 
 # ---------------------------------
@@ -907,13 +912,6 @@ const ADD -> 1
 def Point_new(this)
 	this[NOW] -> 0
 	Number_draw(MAIN_NUM, 0, 24, 2, WHITE)
-
-
-# ポイントが入ったら描画して、add()を呼び出す
-def Point_get(this)
-	#Point_add(this)
-	#Point_draw(this, 20)
-	
 
 def Point_add(this, point)
 	this[NOW] -> this[NOW] + point
