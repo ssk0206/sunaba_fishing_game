@@ -26,6 +26,7 @@ const PAUSE -> 1400
 const ALPHABET -> 1500
 const GAME -> 1999
 const SPACE_KEY_FLAG -> 1998
+const START -> 1997
 
 const PLAYER_NUMBER -> 0
 const FISHLINE_NUMBER -> 10
@@ -49,9 +50,18 @@ const COLLITION_NUMBER -> 1050
 # ---------------------------------
 # ゲーム本体
 # ---------------------------------
+Alphabet_new(ALPHABET)
+
+click_to_start()
+
+memory[START] -> 0
+while memory[START] = 0
+	
+	if left_click()
+		click(START)
+
 
 initialize_game()
-
 
 while memory[GAME]
 	if memory[PAUSE] = 1
@@ -144,6 +154,23 @@ Number_draw(MAIN_NUM, 0, 64, 50, WHITE)
 # ---------------------------------
 
 #
+# スタート画面
+#
+def click_to_start()
+	Alphabet_create_word(ALPHABET, 4, (F * 1000000) + (I * 10000) + (S * 100) + H, 48, 40 ,WHITE)
+	Alphabet_create_word(ALPHABET, 3, (I * 10000) + (N * 100) + (G), 60, 40 ,WHITE)
+
+	Alphabet_create_word(ALPHABET, 2, (C * 100) + L, 26, 70 ,WHITE)
+	Alphabet_create_word(ALPHABET, 3, (I * 10000) + (C * 100) + (K), 38, 70 ,WHITE)
+
+	Alphabet_create_word(ALPHABET, 2, (T * 100) + O, 50, 70 ,WHITE)
+
+	Alphabet_create_word(ALPHABET, 2, (S * 100) + T, 62, 70 ,WHITE)
+	Alphabet_create_word(ALPHABET, 3, (A * 10000) + (R * 100) + (T), 74, 70 ,WHITE)
+
+	memory[55000] -> 1
+
+#
 # ゲーム初期化
 #
 def initialize_game()
@@ -165,7 +192,6 @@ def initialize_game()
 	Collision_new(COLLITION_NUMBER)
 	Number_new(MAIN_NUM)
 	Point_new(MAIN_POINT)
-	Alphabet_new(ALPHABET)
 	Alphabet_draw(ALPHABET, P, 30, 2, WHITE)
 
 #
@@ -484,10 +510,10 @@ def Player_image(this, x, y)
 	point(x+2, this[PLAYER_Y]-3, BROWN)
 	point(x+3, this[PLAYER_Y]-4, BROWN)
 
-	w -> 3
-	while w < 5
-		point(x - w, this[PLAYER_Y]-1, WHITE)
-		w -> w + 1
+
+	point(x - 3, this[PLAYER_Y]-1, WHITE)
+	point(x - 4, this[PLAYER_Y]-1, WHITE)
+
 	w -> 0
 	while w < 11
 		point(x - w, this[PLAYER_Y], WHITE)
