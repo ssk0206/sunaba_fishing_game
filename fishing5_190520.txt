@@ -271,19 +271,27 @@ def create_sun()
 		x -> 5
 
 	point(3, 3, SUN_RED)
+	point(4, 4, SUN_RED)
+
 	point(6, 2, SUN_RED)
 	point(6, 3, SUN_RED)
-	point(9, 3, SUN_RED)
 
+	point(9, 3, SUN_RED)
+	point(8, 4, SUN_RED)
+	
 	point(9, 6, SUN_RED)
 	point(10, 6, SUN_RED)
+
 	point(9, 9, SUN_RED)
+	point(8, 8, SUN_RED)
 
 	point(6, 9, SUN_RED)
 	point(6, 10, SUN_RED)
 
 	point(2, 6, SUN_RED)
 	point(3, 6, SUN_RED)
+
+	point(4, 8, SUN_RED)
 	point(3, 9, SUN_RED)
 
 
@@ -416,13 +424,6 @@ def min (i, j)
 def modulo(a, b)
    out -> (a - ((a / b) * b))
 
-#
-# 擬似乱数
-#
-def random(prev, num) #linear congruential generator mod 1048573
-   if prev = 0 #0はマズい
-      prev -> 1
-   out -> modulo(2043 * prev, num)
 
 # ---------------------------------
 # Playerクラス
@@ -455,15 +456,16 @@ def Player_move(this)
 		point(this[PLAYER_X]+2, this[PLAYER_Y]-3, SKY_BLUE)
 		point(this[PLAYER_X]+3, this[PLAYER_Y]-4, SKY_BLUE)
 
-		point(this[PLAYER_X]-3, this[PLAYER_Y]+1, SKY_BLUE)
-		point(this[PLAYER_X]-2, this[PLAYER_Y]+1, SKY_BLUE)
+		point(this[PLAYER_X]-3, this[PLAYER_Y]-1, SKY_BLUE)
+		point(this[PLAYER_X]-4, this[PLAYER_Y]-1, SKY_BLUE)
+
+		point(this[PLAYER_X]-10, this[PLAYER_Y], SKY_BLUE)
+		point(this[PLAYER_X], this[PLAYER_Y], SKY_BLUE)
+
+		point(this[PLAYER_X]-8, this[PLAYER_Y]+1, SKY_BLUE)
 		point(this[PLAYER_X]-1, this[PLAYER_Y]+1, SKY_BLUE)
 
-		point(this[PLAYER_X]-4, this[PLAYER_Y], SKY_BLUE)
-		point(this[PLAYER_X]-3, this[PLAYER_Y], SKY_BLUE)
-		point(this[PLAYER_X]-2, this[PLAYER_Y], SKY_BLUE)
-		point(this[PLAYER_X]-1, this[PLAYER_Y], SKY_BLUE)
-		point(this[PLAYER_X], this[PLAYER_Y], SKY_BLUE)
+		
 
 
 		this[PLAYER_X] -> (this[PLAYER_X] + (sign(mouse_x() - this[PLAYER_X]) * this[PLAYER_VELOCITY]))
@@ -473,26 +475,29 @@ def Player_move(this)
 def Player_draw(this)
 	x -> min(max(this[PLAYER_X], 0), 96)
 	y -> min(max(this[PLAYER_Y], 0), 99)
+	Player_image(this, x, y)
 
+
+def Player_image(this, x, y)
 	point(x, this[PLAYER_Y]-1, BROWN)
 	point(x+1, this[PLAYER_Y]-2, BROWN)
 	point(x+2, this[PLAYER_Y]-3, BROWN)
 	point(x+3, this[PLAYER_Y]-4, BROWN)
 
-	#point(x-4, this[PLAYER_Y]+1, WHITE)
-	point(x-3, this[PLAYER_Y]+1, WHITE)
-	point(x-2, this[PLAYER_Y]+1, WHITE)
-	point(x-1, this[PLAYER_Y]+1, WHITE)
-
-	#point(x-5, this[PLAYER_Y], WHITE)
-	point(x-4, this[PLAYER_Y], WHITE)
-	point(x-3, this[PLAYER_Y], WHITE)
-	point(x-2, this[PLAYER_Y], WHITE)
-	point(x-1, this[PLAYER_Y], WHITE)
-	point(x, this[PLAYER_Y], WHITE)
-
-#def Player_image()
-
+	w -> 3
+	while w < 5
+		point(x - w, this[PLAYER_Y]-1, WHITE)
+		w -> w + 1
+	w -> 0
+	while w < 11
+		point(x - w, this[PLAYER_Y], WHITE)
+		w -> w + 1
+	w -> 1
+	while w < 9
+		point(x - w, this[PLAYER_Y]+1, WHITE)
+		w -> w + 1
+	
+	
 
 # ---------------------------------
 # Fishlineクラス
@@ -663,7 +668,7 @@ def Fish_catch(this)
 	this[CATCH_FLAG] -> 1
 
 def Fish_up(this)
-	#this[FISH_X] -> Fishline_get_x(FISHLINE_NUMBER)
+	this[FISH_X] -> Fishline_get_x(FISHLINE_NUMBER)
 	this[FISH_Y] -> Fishline_get_y(FISHLINE_NUMBER) - 2
 	# もし水面まであがったら
 	if this[FISH_Y] <= 26
