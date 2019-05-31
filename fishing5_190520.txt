@@ -193,7 +193,7 @@ def resume()
 # ポーズ画面作成
 #
 def create_pause(color)
-	clear_pause(MARINE_BLUE)
+	clear_pause(GLAY)
 	x -> 15
 	y -> 40
 	while y <= 60
